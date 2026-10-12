@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel } = require('@discordjs/voice');
 const http = require('http');
 
+// سيرفر خفيف لإبقاء البوت شغالاً على الاستضافات مثل Replit أو Render
 http.createServer((req, res) => {
     res.write("Bot is alive!");
     res.end();
@@ -17,12 +18,13 @@ const client = new Client({
 const CHANNEL_ID = '1559104968894578749';
 const GUILD_ID = '1543168935036330085';
 
-function connectToVoice() {
+// الدالة المحدثة مع async/await و fetch
+async function connectToVoice() {
     try {
-        const guild = client.guilds.cache.get(GUILD_ID);
+        const guild = await client.guilds.fetch(GUILD_ID);
         if (!guild) return;
 
-        const channel = guild.channels.cache.get(CHANNEL_ID);
+        const channel = await guild.channels.fetch(CHANNEL_ID);
         if (!channel) return;
 
         joinVoiceChannel({
@@ -41,7 +43,7 @@ function connectToVoice() {
 client.once('ready', () => {
     console.log(`تم تسجيل الدخول باسم: ${client.user.tag}`);
     connectToVoice();
-    setInterval(connectToVoice, 300000);
+    setInterval(connectToVoice, 300000); // إعاده الاتصال كل 5 دقائق لضمان البقاء
 });
 
 client.login(process.env.DISCORD_TOKEN);
